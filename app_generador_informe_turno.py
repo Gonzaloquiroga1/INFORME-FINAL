@@ -238,6 +238,10 @@ def build_workbook(form):
     set_text(ws, "B15", form["nov_tecnologica_2"])
     set_text(ws, "B19", form["nov_administrativa"])
     set_text(ws, "B26", form["observaciones_incidentes"])
+        # 4. Operación
+    set_text(ws, "D73", form["operacion_retroalimentacion"])
+    set_text(ws, "D78", form["operacion_nov_tecnologicas"])
+    set_text(ws, "D83", form["operacion_nov_administrativas"])
 
     # Incidents 1.3
     for i in range(3):
@@ -344,6 +348,33 @@ def build_workbook(form):
         set_text(ws, f"F{r2}", sup2.get("motivo", ""))
         set_text(ws, f"H{r2}", sup2.get("observaciones", ""))
         set_text(ws, f"M{r2}", sup2.get("rol", ""))
+            # 7.1 Reportes fuera de tiempo contratistas + 7.2 contratista no reportado
+    for i in range(25):
+        r = 152 + i
+
+        row = form["contratista_fuera_tiempo"][i]
+        cc = normalize_cc(row.get("cc", ""))
+        set_text(ws, f"C{r}", cc)
+        set_text(ws, f"E{r}", row.get("registro_c4", ""))
+        set_text(ws, f"F{r}", row.get("informa", ""))
+
+        row2 = form["contratista_no_reportado"][i]
+        cc2 = normalize_cc(row2.get("cc", ""))
+        set_text(ws, f"H{r}", cc2)
+        set_text(ws, f"K{r}", row2.get("tipo_evento", ""))
+        set_text(ws, f"L{r}", row2.get("informa", ""))
+        set_text(ws, f"M{r}", row2.get("soportes", ""))
+
+    # 7.3 Retiro anticipado presentado por el personal
+    for i in range(10):
+        r = 178 + i
+        row = form["contratista_retiros"][i]
+        cc = normalize_cc(row.get("cc", ""))
+        set_text(ws, f"H{r}", cc)
+        set_text(ws, f"K{r}", row.get("motivo", ""))
+        set_text(ws, f"M{r}", row.get("hora_salida", ""))
+
+    set_text(ws, "E188", form["contratista_observaciones"])
 
     # Convenience: set the date style on some cells
     for cell in ("E6", "F42"):
@@ -430,6 +461,13 @@ def default_form():
         "retiros": [empty_ret_row() for _ in range(10)],
         "apoyo_planta": [empty_sup_row() for _ in range(15)],
         "apoyo_contratista": [empty_sup_row() for _ in range(15)],
+        "operacion_retroalimentacion": "",
+"operacion_nov_tecnologicas": "",
+"operacion_nov_administrativas": "",
+"contratista_fuera_tiempo": [empty_late_row() for _ in range(25)],
+"contratista_no_reportado": [empty_abs_row() for _ in range(25)],
+"contratista_retiros": [empty_ret_row() for _ in range(10)],
+"contratista_observaciones": "",
     }
 
 def ensure_state():
@@ -677,6 +715,77 @@ with tab4:
         key="sup2_editor",
     )
     form["apoyo_contratista"] = sup2_df.to_dict(orient="records")
+        st.subheader("4. Operación")
+
+    form["operacion_retroalimentacion"] = st.text_area(
+        "4.1.1 Retroalimentación",
+        value=form.get("operacion_retroalimentacion", ""),
+        height=120,
+    )
+
+    form["operacion_nov_tecnologicas"] = st.text_area(
+        "4.1.2 Novedades tecnológicas",
+        value=form.get("operacion_nov_tecnologicas", ""),
+        height=120,
+    )
+
+    form["operacion_nov_administrativas"] = st.text_area(
+        "4.1.3 Novedades administrativas",
+        value=form.get("operacion_nov_administrativas", ""),
+        height=120,
+    )
+
+    st.subheader("7.1 Reportes fuera de tiempo contratistas")
+    contr_fuera_df = pd.DataFrame(form["contratista_fuera_tiempo"])
+    contr_fuera_df = st.data_editor(
+        contr_fuera_df,
+        num_rows="fixed",
+        use_container_width=True,
+        column_config={
+            "cc": st.column_config.TextColumn("Cédula"),
+            "registro_c4": st.column_config.TextColumn("Registro ingreso C4"),
+            "informa": st.column_config.TextColumn("Informa"),
+        },
+        key="contr_fuera_editor",
+    )
+    form["contratista_fuera_tiempo"] = contr_fuera_df.to_dict(orient="records")
+
+    st.subheader("7.2 Contratista no reportado")
+    contr_no_df = pd.DataFrame(form["contratista_no_reportado"])
+    contr_no_df = st.data_editor(
+        contr_no_df,
+        num_rows="fixed",
+        use_container_width=True,
+        column_config={
+            "cc": st.column_config.TextColumn("Cédula"),
+            "tipo_evento": st.column_config.TextColumn("Tipo de evento reportado"),
+            "informa": st.column_config.TextColumn("Informa"),
+            "soportes": st.column_config.TextColumn("Soportes"),
+        },
+        key="contr_no_editor",
+    )
+    form["contratista_no_reportado"] = contr_no_df.to_dict(orient="records")
+
+    st.subheader("7.3 Retiro anticipado presentado por el personal")
+    contr_ret_df = pd.DataFrame(form["contratista_retiros"])
+    contr_ret_df = st.data_editor(
+        contr_ret_df,
+        num_rows="fixed",
+        use_container_width=True,
+        column_config={
+            "cc": st.column_config.TextColumn("Cédula"),
+            "motivo": st.column_config.TextColumn("Motivo retiro"),
+            "hora_salida": st.column_config.TextColumn("Hora salida"),
+        },
+        key="contr_ret_editor",
+    )
+    form["contratista_retiros"] = contr_ret_df.to_dict(orient="records")
+
+    form["contratista_observaciones"] = st.text_area(
+        "7.3.5 Observaciones - novedades del personal",
+        value=form.get("contratista_observaciones", ""),
+        height=120,
+    )
 
 st.session_state.form = form
 
