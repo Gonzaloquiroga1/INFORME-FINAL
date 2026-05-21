@@ -238,7 +238,7 @@ def build_workbook(form):
     set_text(ws, "B15", form["nov_tecnologica_2"])
     set_text(ws, "B19", form["nov_administrativa"])
     set_text(ws, "B26", form["observaciones_incidentes"])
-        # 4. Operación
+    # 4. Operación
     set_text(ws, "D73", form["operacion_retroalimentacion"])
     set_text(ws, "D78", form["operacion_nov_tecnologicas"])
     set_text(ws, "D83", form["operacion_nov_administrativas"])
@@ -348,7 +348,7 @@ def build_workbook(form):
         set_text(ws, f"F{r2}", sup2.get("motivo", ""))
         set_text(ws, f"H{r2}", sup2.get("observaciones", ""))
         set_text(ws, f"M{r2}", sup2.get("rol", ""))
-            # 7.1 Reportes fuera de tiempo contratistas + 7.2 contratista no reportado
+        # 7.1 Reportes fuera de tiempo contratistas + 7.2 contratista no reportado
     for i in range(25):
         r = 152 + i
 
@@ -715,7 +715,7 @@ with tab4:
         key="sup2_editor",
     )
     form["apoyo_contratista"] = sup2_df.to_dict(orient="records")
-        st.subheader("4. Operación")
+    st.subheader("4. Operación")
 
     form["operacion_retroalimentacion"] = st.text_area(
         "4.1.1 Retroalimentación",
