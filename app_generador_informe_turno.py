@@ -164,11 +164,23 @@ def build_year_schedule(ws, year):
         for c in (5, 6, 7, 14, 15, 16):
             ws.cell(excel_row, c).value = None
 
+from openpyxl.cell.cell import MergedCell
+
+def get_anchor_cell(ws, coord):
+    cell = ws[coord]
+    if isinstance(cell, MergedCell):
+        for rng in ws.merged_cells.ranges:
+            if coord in rng:
+                return ws.cell(rng.min_row, rng.min_col)
+    return cell
+
 def set_text(ws, cell, value):
-    ws[cell] = clean_text(value)
+    target = get_anchor_cell(ws, cell)
+    target.value = clean_text(value)
 
 def set_raw(ws, cell, value):
-    ws[cell] = value
+    target = get_anchor_cell(ws, cell)
+    target.value = value
 
 def write_table_rows(ws, start_row, rows, mapping):
     """
