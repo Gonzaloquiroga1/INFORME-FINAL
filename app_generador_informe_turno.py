@@ -8,7 +8,23 @@ import streamlit as st
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 
-TEMPLATE_PATH = "F-GE-1483_template.xlsx"
+from pathlib import Path
+
+TEMPLATE_CANDIDATES = [
+    "F-GE-1483 (3).xlsx",
+    "F-GE-1483.xlsx",
+    "F-GE-1483_template.xlsx",
+]
+
+TEMPLATE_PATH = next(
+    (f for f in TEMPLATE_CANDIDATES if Path(f).exists()),
+    None
+)
+
+if TEMPLATE_PATH is None:
+    raise FileNotFoundError(
+        "No se encontró el archivo Excel de plantilla."
+    )
 OUTPUT_NAME = "Informe_general_de_turno_generado.xlsx"
 
 # ---------------------------------------------------------------------
