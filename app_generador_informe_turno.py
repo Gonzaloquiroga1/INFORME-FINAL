@@ -578,7 +578,11 @@ with tab2:
     cols = st.columns(2)
     for idx, (field, label) in enumerate(staff_fields):
         with cols[idx % 2]:
-            form[field] = st.text_input(label, value=form[field])
+            form[field] = st.text_input(
+    label,
+    value=form.get(field, ""),
+    key=f"staff_{field}"
+)
 
 with tab3:
     st.subheader("5.1 Llegadas tarde")
