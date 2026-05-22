@@ -718,7 +718,7 @@ with tab4:
     )
     form["apoyo_contratista"] = sup2_df.to_dict(orient="records")
     
-        st.subheader("4. Operación")
+    st.subheader("4. Operación")
 
     form["operacion_retroalimentacion"] = st.text_area(
         "4.1.1 Retroalimentación",
